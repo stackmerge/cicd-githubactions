@@ -12,6 +12,8 @@ on:
 jobs:
   buildAndDeply:
     runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     steps:
     - name: Checkout repository
@@ -27,9 +29,7 @@ jobs:
     - name: Build with Maven
       run: mvn clean -B package -s .maven/settings.xml
 
-    - name: Deploy with Maven
-      run: mvn -B deploy -DmuleDeploy -s .maven/settings.xml
-      
+     
       env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
@@ -37,3 +37,10 @@ jobs:
           PLATFORM_PASSWORD: ${{ secrets.PLATFORM_PASSWORD }}
           SANDBOX_CLIENT_ID: ${{ secrets.SANDBOX_CLIENT_ID }}
           SANDBOX_CLIENT_SECRET: ${{ secrets.SANDBOX_CLIENT_SECRET }}
+          
+    - name: Slack Notification
+      uses: act10ns/slack@v1
+      with: 
+        status: ${{ job.status }}
+        steps: ${{ toJson(steps) }}
+      if: always()
