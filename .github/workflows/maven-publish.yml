@@ -22,6 +22,14 @@ jobs:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     steps:
+    - name: Slack Notification
+      uses: act10ns/slack@v1
+      with: 
+        status: starting
+        channel: '#meetups'
+        message: Starting Build and Deploy...
+      if: always()
+      
     - name: Checkout repository
       uses: actions/checkout@v2
       
@@ -40,6 +48,6 @@ jobs:
       with: 
         status: ${{ job.status }}
         channel: '#meetups'
-        message: Deploying {{ env.GITHUB_REF_NAME }} branch
+        message: Deployed {{ env.GITHUB_REF_NAME }} branch Successfully
       if: always()      
 
