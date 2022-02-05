@@ -12,6 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: Production
     env:
       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
@@ -65,53 +66,3 @@ jobs:
         message: Build {{ env.GITHUB_REF_NAME }} branch Successfully
       if: always()
       
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-      NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-      PLATFORM_USERNAME: ${{ secrets.PLATFORM_USERNAME }}
-      PLATFORM_PASSWORD: ${{ secrets.PLATFORM_PASSWORD }}
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-    steps:
-    - name: Slack Notification
-      uses: act10ns/slack@v1
-      with: 
-        status: starting
-        channel: '#meetups'
-        message: Starting Deployment...
-      if: always()
-      
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      
-    - name: Checking Cache
-      uses: actions/cache@v1
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-      
-      
-    - uses: actions/download-artifact@master
-      with:
-        name: artifacts    
-      
-    - name: Deploy to Sandbox
-      run: |
-        artifactName=$(ls *.jar | head -1)
-        mvn deploy -DmuleDeploy \
-         -Dmule.artifact=$artifactName \
-         -s .maven/settings.xml \
-         -DskipTests   
-      
-    - name: Slack Notification
-      uses: act10ns/slack@v1
-      with: 
-        status: ${{ job.status }}
-        channel: '#meetups'
-        message: Deployed {{ env.GITHUB_REF_NAME }} branch Successfully
-      if: always()   
-    
