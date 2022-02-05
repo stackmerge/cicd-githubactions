@@ -43,6 +43,9 @@ jobs:
     - name: Build with Maven
       run: mvn clean -B package -s .maven/settings.xml
       
+    - name: Deploy with Maven
+      run: mvn -B deploy -DmuleDeploy -s .maven/settings.xml   
+      
     - name: Slack Notification
       uses: act10ns/slack@v1
       with: 
