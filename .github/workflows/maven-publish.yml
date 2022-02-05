@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Cloudhub - Build
+name: Cloudhub - Build And Deploy
 
 on:
   push:
@@ -17,8 +17,6 @@ jobs:
       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       PLATFORM_USERNAME: ${{ secrets.PLATFORM_USERNAME }}
       PLATFORM_PASSWORD: ${{ secrets.PLATFORM_PASSWORD }}
-      #SANDBOX_CLIENT_ID: ${{ secrets.SANDBOX_CLIENT_ID }}
-      #SANDBOX_CLIENT_SECRET: ${{ secrets.SANDBOX_CLIENT_SECRET }} 
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     steps:
@@ -62,10 +60,7 @@ jobs:
       uses: actions/upload-artifact@master
       with:
           name: artifacts
-          path: target/*.jar      
-      
-    - name: Deploy with Maven
-      run: mvn -B deploy -DmuleDeploy -s .maven/settings.xml   
+          path: target/*.jar        
       
     - name: Slack Notification
       uses: act10ns/slack@v1
@@ -83,8 +78,6 @@ jobs:
       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       PLATFORM_USERNAME: ${{ secrets.PLATFORM_USERNAME }}
       PLATFORM_PASSWORD: ${{ secrets.PLATFORM_PASSWORD }}
-      #SANDBOX_CLIENT_ID: ${{ secrets.SANDBOX_CLIENT_ID }}
-      #SANDBOX_CLIENT_SECRET: ${{ secrets.SANDBOX_CLIENT_SECRET }} 
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     steps:
