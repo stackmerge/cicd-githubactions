@@ -36,7 +36,7 @@
 					<muleVersion>4.4.0</muleVersion>
 					<username>${env.PLATFORM_USERNAME}</username>
 					<password>${env.PLATFORM_PASSWORD}</password>
-					<applicationName>hello-world-githubactions-apdec21</applicationName>
+					<applicationName>cicd-githubactions-apfeb22</applicationName>
 					<environment>Dev</environment>
 					<workers>1</workers>
 					<workerType>MICRO</workerType>
