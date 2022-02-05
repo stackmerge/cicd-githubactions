@@ -1,4 +1,6 @@
-#This workflow is to build mule project and deploy
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
 name: Cloudhub - Build and Deploy
 
 on:
@@ -8,29 +10,8 @@ on:
     branches: [ master ]
 
 jobs:
-  buildAndDeply:
+  buildAndDeploy:
     runs-on: ubuntu-latest
-    steps:    
-    - name: Checkout repository
-      uses: actions/checkout@v2  
-      
-    - name: Checking Cache
-      uses: actions/cache@v1
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-      
-      
-    - name: Set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'adopt'
-        #cache: maven    
-        
-    - name: Build with Maven
-      run: mvn clean -B package -s .maven/settings.xml
     env:
       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
@@ -38,4 +19,48 @@ jobs:
       PLATFORM_PASSWORD: ${{ secrets.PLATFORM_PASSWORD }}
       #SANDBOX_CLIENT_ID: ${{ secrets.SANDBOX_CLIENT_ID }}
       #SANDBOX_CLIENT_SECRET: ${{ secrets.SANDBOX_CLIENT_SECRET }} 
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}      
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    steps:
+    - name: Slack Notification
+      uses: act10ns/slack@v1
+      with: 
+        status: starting
+        channel: '#meetups'
+        message: Starting Build and Deploy...
+      if: always()
+      
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
+    - name: Checking Cache
+      uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-         
+        
+    - name: Build with Maven
+      run: mvn clean -B package -s .maven/settings.xml
+      
+    - name: Stamp artifact file name with commit hash
+      run: |
+        artifactName1=$(ls target/*.jar | head -1)
+        commitHash=$(git rev-parse --short "$GITHUB_SHA")
+        artifactName2=$(ls target/*.jar | head -1 | sed "s/.jar/-$commitHash.jar/g")
+        mv $artifactName1 $artifactName2
+    
+    - name: Upload artifact 
+      uses: actions/upload-artifact@master
+      with:
+          name: artifacts
+          path: target/*.jar      
+      
+    - name: Slack Notification
+      uses: act10ns/slack@v1
+      with: 
+        status: ${{ job.status }}
+        channel: '#meetups'
+        message: Build {{ env.GITHUB_REF_NAME }} branch Successfully
+      if: always()   
