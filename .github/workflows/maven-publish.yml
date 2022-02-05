@@ -8,11 +8,12 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:    
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: Production
+    #environment: Production
     env:
       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
