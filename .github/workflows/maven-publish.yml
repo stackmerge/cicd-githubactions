@@ -17,8 +17,8 @@ jobs:
       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       PLATFORM_USERNAME: ${{ secrets.PLATFORM_USERNAME }}
       PLATFORM_PASSWORD: ${{ secrets.PLATFORM_PASSWORD }}
-      SANDBOX_CLIENT_ID: ${{ secrets.SANDBOX_CLIENT_ID }}
-      SANDBOX_CLIENT_SECRET: ${{ secrets.SANDBOX_CLIENT_SECRET }} 
+      #SANDBOX_CLIENT_ID: ${{ secrets.SANDBOX_CLIENT_ID }}
+      #SANDBOX_CLIENT_SECRET: ${{ secrets.SANDBOX_CLIENT_SECRET }} 
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     steps:
@@ -33,12 +33,20 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
       
+    - name: Checking Cache
+      uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-      
+      
     - name: Set up JDK 11
       uses: actions/setup-java@v2
       with:
         java-version: '11'
         distribution: 'adopt'
-        cache: maven    
+        #cache: maven    
         
     - name: Build with Maven
       run: mvn clean -B package -s .maven/settings.xml
@@ -52,5 +60,7 @@ jobs:
         status: ${{ job.status }}
         channel: '#meetups'
         message: Deployed {{ env.GITHUB_REF_NAME }} branch Successfully
-      if: always()      
+      if: always()   
+      
+    
 
