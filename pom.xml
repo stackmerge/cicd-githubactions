@@ -37,7 +37,7 @@
 					<username>${env.PLATFORM_USERNAME}</username>
 					<password>${env.PLATFORM_PASSWORD}</password>
 					<applicationName>cicd-githubactions-apfeb22</applicationName>
-					<environment>Dev</environment>
+					<environment>Sandbox</environment>
 					<workers>1</workers>
 					<workerType>MICRO</workerType>
 					<objectStoreV2>true</objectStoreV2>
