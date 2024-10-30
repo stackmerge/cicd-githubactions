@@ -21,7 +21,7 @@ jobs:
       PLATFORM_PASSWORD: ${{ secrets.PLATFORM_PASSWORD }}
       #SANDBOX_CLIENT_ID: ${{ secrets.SANDBOX_CLIENT_ID }}
       #SANDBOX_CLIENT_SECRET: ${{ secrets.SANDBOX_CLIENT_SECRET }} 
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACKWEBHOOK }}
 
     steps:
     - name: Slack Notification
@@ -75,7 +75,7 @@ jobs:
       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       PLATFORM_USERNAME: ${{ secrets.PLATFORM_USERNAME }}
       PLATFORM_PASSWORD: ${{ secrets.PLATFORM_PASSWORD }}
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACKWEBHOOK }}
 
     steps:
     - name: Slack Notification
